@@ -16,7 +16,7 @@ import io.netty.util.CharsetUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
+
 import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
@@ -71,7 +71,6 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
             stringBuilder.append("<td>").append(dateFormat(requestEntry.getValue().getLastTime())).append("</td>");
             stringBuilder.append("<tr>");
         }
-
         stringBuilder.append("</table>");
         stringBuilder.append("<br>");
 
@@ -88,6 +87,8 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
             stringBuilder.append("<td>").append(redirectEntry.getValue().getRedirectCount()).append("</td>");
             stringBuilder.append("<tr>");
         }
+        stringBuilder.append("</table>");
+        stringBuilder.append("<br>");
 
         stringBuilder.append("</body>");
         stringBuilder.append("</html>");

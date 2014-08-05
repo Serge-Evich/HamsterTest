@@ -1,5 +1,6 @@
 package hamster.netty.http.server.handlers;
 
+import hamster.netty.http.server.stat.RedirectStat;
 import hamster.netty.http.server.stat.RequestStat;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,6 +27,7 @@ public class HttpRedirectHandler extends SimpleChannelInboundHandler<HttpRequest
         if(uriSplit.length == 2 && uriSplit[0].contains("/redirect?")) {
             sendRedirect(context, uriSplit[1]);
             RequestStat.addRequestEntity(httpRequest.headers().get("Host"));
+            RedirectStat.addRedirectEntity(uriSplit[1]);
         } else {
             context.fireChannelRead(httpRequest);
         }
@@ -40,9 +42,9 @@ public class HttpRedirectHandler extends SimpleChannelInboundHandler<HttpRequest
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext context, Throwable cause) throws Exception {
         cause.printStackTrace();
-        ctx.close();
+        context.close();
     }
     public static void main(String[] args) {
         String str = "/redirect?url=<url>";
