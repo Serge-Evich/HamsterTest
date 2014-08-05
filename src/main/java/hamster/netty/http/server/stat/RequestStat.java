@@ -19,7 +19,7 @@ public class RequestStat {
         if(requestEntity != null) {
             requestEntity.incrementCount();
             requestEntity.setLastTime(new AtomicLong(System.currentTimeMillis()));
-            requestEntityMap.replace(ip, requestEntity);
+            requestEntityMap.put(ip, requestEntity);
         }  else {
             requestEntityMap.put(ip, new RequestEntity(ip, new AtomicLong(1), new AtomicLong(System.currentTimeMillis())));
         }

@@ -1,5 +1,7 @@
 package hamster.netty.http.server.handlers;
 
+import hamster.netty.http.server.stat.RedirectEntity;
+import hamster.netty.http.server.stat.RedirectStat;
 import hamster.netty.http.server.stat.RequestEntity;
 import hamster.netty.http.server.stat.RequestStat;
 import io.netty.buffer.Unpooled;
@@ -36,7 +38,7 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
             response.headers().set(CONTENT_TYPE, "text/html");
 
-
+            RequestStat.addRequestEntity(httpRequest.headers().get("Host"));
 
             context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 
@@ -71,6 +73,22 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
         }
 
         stringBuilder.append("</table>");
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("Redirect Table");
+        stringBuilder.append("<table border=\"1\">");
+        stringBuilder.append("<tr>");
+        stringBuilder.append("<td>").append("URL").append("</td>");
+        stringBuilder.append("<td>").append("url_count").append("</td>");
+        stringBuilder.append("<tr>");
+
+        for(Map.Entry<String, RedirectEntity> redirectEntry : RedirectStat.getRedirectMap().entrySet()) {
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>").append(redirectEntry.getKey()).append("</td>");
+            stringBuilder.append("<td>").append(redirectEntry.getValue().getRedirectCount()).append("</td>");
+            stringBuilder.append("<tr>");
+        }
+
         stringBuilder.append("</body>");
         stringBuilder.append("</html>");
 
