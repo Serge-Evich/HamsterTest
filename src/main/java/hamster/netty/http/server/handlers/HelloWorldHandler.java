@@ -21,7 +21,7 @@ import static io.netty.handler.codec.http.HttpVersion.*;
  * Created by Димон on 02.08.2014.
  */
 public class HelloWorldHandler extends SimpleChannelInboundHandler<HttpRequest> {
-    private static final byte[] HELLO = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+    private static final String HELLO = "Hello World!";
 
     @Override
     public void channelRead0(final ChannelHandlerContext context, HttpRequest httpRequest) throws Exception {
@@ -30,10 +30,15 @@ public class HelloWorldHandler extends SimpleChannelInboundHandler<HttpRequest> 
         if (httpRequest.getUri().equals("/hello")) {
             context.executor().schedule(new Runnable() {
                 public void run() {
-                    FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(HELLO));
-                    response.headers().set(CONTENT_TYPE, "text/plain");
-                    response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-                    context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                    try {
+                        FullHttpResponse response =
+                                new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(HELLO.getBytes("UTF-8")));
+                        response.headers().set(CONTENT_TYPE, "text/plain");
+                        response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
+                        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }, 10, TimeUnit.SECONDS);
             RequestStat.addRequestEntity(httpRequest.headers().get("Host"));
