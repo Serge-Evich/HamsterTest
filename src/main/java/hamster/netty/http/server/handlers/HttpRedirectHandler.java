@@ -46,10 +46,5 @@ public class HttpRedirectHandler extends SimpleChannelInboundHandler<HttpRequest
         cause.printStackTrace();
         context.close();
     }
-    public static void main(String[] args) {
-        String str = "/redirect?url=<url>";
-        for(String s : str.split("url="))
-            System.out.println(s);
-    }
 
 }
