@@ -12,8 +12,6 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 
-import java.util.Arrays;
-
 /**
  * Created by Димон on 03.08.2014.
  */
@@ -26,7 +24,7 @@ public class HttpRedirectHandler extends SimpleChannelInboundHandler<HttpRequest
 
         if(uriSplit.length == 2 && uriSplit[0].contains("/redirect?")) {
             sendRedirect(context, uriSplit[1]);
-            RequestStat.addRequestEntity(httpRequest.headers().get("Host"));
+            RequestStat.addIpEntity(httpRequest.headers().get("Host"), httpRequest.getUri());
             RedirectStat.addRedirectEntity(uriSplit[1]);
         } else {
             context.fireChannelRead(httpRequest);

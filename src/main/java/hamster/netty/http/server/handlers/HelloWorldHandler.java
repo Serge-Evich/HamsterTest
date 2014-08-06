@@ -41,7 +41,7 @@ public class HelloWorldHandler extends SimpleChannelInboundHandler<HttpRequest> 
                     }
                 }
             }, 10, TimeUnit.SECONDS);
-            RequestStat.addRequestEntity(httpRequest.headers().get("Host"));
+            RequestStat.addIpEntity(httpRequest.headers().get("Host"), httpRequest.getUri());
         } else {
             context.fireChannelRead(httpRequest);
         }

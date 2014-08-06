@@ -1,8 +1,8 @@
 package hamster.netty.http.server.handlers;
 
+import hamster.netty.http.server.stat.IpEntity;
 import hamster.netty.http.server.stat.RedirectEntity;
 import hamster.netty.http.server.stat.RedirectStat;
-import hamster.netty.http.server.stat.RequestEntity;
 import hamster.netty.http.server.stat.RequestStat;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -38,7 +38,7 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
             response.headers().set(CONTENT_TYPE, "text/html");
 
-            RequestStat.addRequestEntity(httpRequest.headers().get("Host"));
+            RequestStat.addIpEntity(httpRequest.headers().get("Host"), httpRequest.getUri());
 
             context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 
@@ -64,10 +64,10 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
         stringBuilder.append("<td>").append("req_last_time").append("</td>");
         stringBuilder.append("<tr>");
 
-        for(Map.Entry<String, RequestEntity> requestEntry : RequestStat.getReqEntityMap().entrySet()) {
+        for(Map.Entry<String, IpEntity> requestEntry : RequestStat.getReqEntityMap().entrySet()) {
             stringBuilder.append("<tr>");
             stringBuilder.append("<td>").append(requestEntry.getKey()).append("</td>");
-            stringBuilder.append("<td>").append(requestEntry.getValue().getCount()).append("</td>");
+            stringBuilder.append("<td>").append(requestEntry.getValue().getRequestCount()).append("</td>");
             stringBuilder.append("<td>").append(dateFormat(requestEntry.getValue().getLastTime())).append("</td>");
             stringBuilder.append("<tr>");
         }
@@ -90,8 +90,24 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
         stringBuilder.append("</table>");
         stringBuilder.append("<br>");
 
+        stringBuilder.append("Last Connections Table");
+        stringBuilder.append("<table border=\"1\">");
+        stringBuilder.append("<tr>");
+        stringBuilder.append("<td>").append("src_ip").append("</td>");
+        stringBuilder.append("<td>").append("uri").append("</td>");
+        stringBuilder.append("<td>").append("timestamp").append("</td>");
+        stringBuilder.append("<tr>");
+        for (Map.Entry<Long, IpEntity> entry : RequestStat.getLastConnections().entrySet()) {
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>").append(entry.getValue().getIp()).append("</td>");
+            stringBuilder.append("<td>").append(entry.getValue().getLastUrl()).append("</td>");
+            stringBuilder.append("<td>").append(entry.getValue().getLastTime()).append("</td>");
+            stringBuilder.append("<tr>");
+        }
         stringBuilder.append("</body>");
         stringBuilder.append("</html>");
+
+
 
         return stringBuilder.toString();
     }
