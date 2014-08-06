@@ -52,6 +52,7 @@ public class IpEntity {
             urlMap.replace(url, u);
         } else {
             u = new UrlEntity(url, new AtomicLong(1), new AtomicLong(System.currentTimeMillis()));
+            urlMap.put(url, u);
         }
     }
     public String getLastUrl() {
