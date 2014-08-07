@@ -1,9 +1,6 @@
 package hamster.netty.http.server.handlers;
 
-import hamster.netty.http.server.stat.IpEntity;
-import hamster.netty.http.server.stat.RedirectEntity;
-import hamster.netty.http.server.stat.RedirectStat;
-import hamster.netty.http.server.stat.RequestStat;
+import hamster.netty.http.server.stat.*;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -98,10 +95,11 @@ public class HttpStatusHandler extends SimpleChannelInboundHandler<HttpRequest> 
         stringBuilder.append("<td>").append("timestamp").append("</td>");
         stringBuilder.append("<tr>");
         for (Map.Entry<Long, IpEntity> entry : RequestStat.getLastConnections().entrySet()) {
+            UrlEntity urlEntity = entry.getValue().getUrlByTime(entry.getKey());
             stringBuilder.append("<tr>");
             stringBuilder.append("<td>").append(entry.getValue().getIp()).append("</td>");
-            stringBuilder.append("<td>").append(entry.getValue().getLastUrl()).append("</td>");
-            stringBuilder.append("<td>").append(entry.getValue().getLastTime()).append("</td>");
+            stringBuilder.append("<td>").append(urlEntity.getUrl()).append("</td>");
+            stringBuilder.append("<td>").append(dateFormat(urlEntity.getLastTime().get())).append("</td>");
             stringBuilder.append("<tr>");
         }
         stringBuilder.append("</body>");

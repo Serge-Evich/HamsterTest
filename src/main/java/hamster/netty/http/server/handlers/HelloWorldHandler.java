@@ -28,6 +28,7 @@ public class HelloWorldHandler extends SimpleChannelInboundHandler<HttpRequest> 
         System.out.println(httpRequest);
 
         if (httpRequest.getUri().equals("/hello")) {
+            RequestStat.addIpEntity(httpRequest.headers().get("Host"), httpRequest.getUri());
             context.executor().schedule(new Runnable() {
                 public void run() {
                     try {
@@ -41,7 +42,7 @@ public class HelloWorldHandler extends SimpleChannelInboundHandler<HttpRequest> 
                     }
                 }
             }, 10, TimeUnit.SECONDS);
-            RequestStat.addIpEntity(httpRequest.headers().get("Host"), httpRequest.getUri());
+
         } else {
             context.fireChannelRead(httpRequest);
         }

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RequestStat {
 
     private static ConcurrentHashMap<String, IpEntity>
-            requestEntityMap = new ConcurrentHashMap<String, IpEntity>();
+            requestEntityMap = new ConcurrentHashMap<>();
 
     public static void addIpEntity(String ip, String url) {
         IpEntity requestEntity = requestEntityMap.get(ip);
@@ -45,7 +45,10 @@ public class RequestStat {
         TreeMap<Long, IpEntity> treeMap = new TreeMap<>();
         TreeMap<Long, IpEntity> resMap = new TreeMap<>();
         for (IpEntity ip : requestEntityMap.values()) {
-            treeMap.put(ip.getLastTime(), ip);
+            for (UrlEntity url : ip.getUrlSet()) {
+                System.out.println("for (UrlEntity url : ip.getUrlSet()): " + url);
+                treeMap.put(url.getLastTime().get(), ip);
+            }
         }
         int size = treeMap.size();
 

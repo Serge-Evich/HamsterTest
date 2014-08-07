@@ -1,5 +1,9 @@
 package hamster.netty.http.server.stat;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -30,7 +34,14 @@ public class IpEntity {
         }
         return count.get();
     }
-
+    public UrlEntity getUrlByTime(long millis) {
+        for (UrlEntity u: urlMap.values()) {
+            if (u.getLastTime().get() == millis) {
+                return u;
+            }
+        }
+        return null;
+    }
     public long getLastTime() {
         AtomicLong lastTime = new AtomicLong(0);
         for (UrlEntity u : urlMap.values()) {
@@ -42,6 +53,7 @@ public class IpEntity {
     }
 
     public void addUrl(String url) {
+        System.out.println("addUrl: " + url);
         if(urlMap == null) {
             urlMap = new ConcurrentHashMap<>();
         }
@@ -50,11 +62,14 @@ public class IpEntity {
             u.incrementCount();
             u.setLastTime(new AtomicLong(System.currentTimeMillis()));
             urlMap.replace(url, u);
+            System.out.println("urlMap.replace(url, u)" + urlMap.get(url));
         } else {
             u = new UrlEntity(url, new AtomicLong(1), new AtomicLong(System.currentTimeMillis()));
             urlMap.put(url, u);
+            System.out.println("urlMap.put(url, u): " + urlMap.get(url));
         }
     }
+
     public String getLastUrl() {
         String url = "";
         AtomicLong lastTime = new AtomicLong(0);
@@ -65,6 +80,9 @@ public class IpEntity {
             }
         }
         return url;
+    }
+    public Set<UrlEntity> getUrlSet() {
+        return new HashSet<>(urlMap.values());
     }
     @Override
     public boolean equals(Object o) {
